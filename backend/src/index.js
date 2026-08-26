@@ -14,8 +14,20 @@ const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
 
-const publicDir = path.join(process.cwd(), "public");
+const publicDir = path.join(process.cwd(), "Public");
 
+// ... your middleware and API routes ...
+
+// if the Public directory exists, serve the static files
+if (fs.existsSync(publicDir)){
+  app.use(express.static(publicDir));
+
+  app.get("*", (req, res, next) => {
+    res.sendFile(path.join(publicDir, "index.html"), (err) => {
+      if (err) next(err);
+    });
+  });
+}
 
 
 app.use(express.json());
