@@ -1,12 +1,37 @@
 import express from "express";
+import cors from "cors";
 import "dotenv/config";
 
+import { clerkMiddleware } from '@clerk/express';
 
-
+import User from "./models/user.model.js";
+import { connectDB } from "./lib/db.js";
 
 const app = express();
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3000;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 
 
-app.listen(PORT, () => console.log("Server is up and running on PORT:", PORT));
+app.use(express.json());
+app.use(cors({origin: FRONTEND_URL, credentials:true}));
+
+app.use(clerkMiddleware());
+
+
+app.get("/health", (req, res) => {
+    res.status(200).json({ ok: true});
+});
+
+app.use(express.json());
+
+// Connect to MongoDB first, then listen
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log("Server is up and running on PORT:", PORT);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to start server due to DB connection error.");
+  });
