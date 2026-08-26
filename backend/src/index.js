@@ -22,7 +22,7 @@ const publicDir = path.join(process.cwd(), "Public");
 if (fs.existsSync(publicDir)){
   app.use(express.static(publicDir));
 
-  app.get("*", (req, res, next) => {
+  app.get("/*", (req, res, next) => {
     res.sendFile(path.join(publicDir, "index.html"), (err) => {
       if (err) next(err);
     });
