@@ -8,9 +8,8 @@ export async function connectDB() {
             throw new Error("MONGO_URI is required");
         }
 
-        const conn = await mongoose.connect(mongoUri, {
-            family:
-        });
+        const conn = await mongoose.connect(mongoUri);
+           
 
 
         console.log("MongoDB connected",conn.connection.host);
