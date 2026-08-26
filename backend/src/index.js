@@ -5,8 +5,7 @@ import fs from "fs";
 import path from "path";
 
 
-import job from "./cron.js"; // <-- Add this line at the top
-
+import job from "../cron.js";
 
 import { clerkMiddleware } from '@clerk/express';
 
