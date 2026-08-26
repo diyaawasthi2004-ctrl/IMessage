@@ -1,8 +1,8 @@
 # stage 1 Build the SPA (Vite)
 FROM node:22-bookworm-slim AS frontend-build
 WORKDIR /app/frontend 
-COPY frontend/pacjage.json frontend/package-lock.json ./
-RUN npm install --no-audit --no-fund --leagcy-peer-deps
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm install --no-audit --no-fund --legacy-peer-deps
 COPY frontend/ ./
 # Empty = browser calls /api on the dame host as the page.
 ENV VITE_API_URL=
