@@ -13,45 +13,29 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
-
 const publicDir = path.join(process.cwd(), "Public");
 
-// ... your middleware and API routes ...
+// Standard Middleware
+app.use(express.json());
+app.use(cors({ origin: FRONTEND_URL, credentials: true }));
+app.use(clerkMiddleware());
 
-// if the Public directory exists, serve the static files
-if (fs.existsSync(publicDir)){
+// API Health Check Route
+app.get("/health", (req, res) => {
+    res.status(200).json({ ok: true });
+});
+
+// Serve frontend static files and handle client-side routing (Only defined ONCE)
+if (fs.existsSync(publicDir)) {
   app.use(express.static(publicDir));
 
-  app.get("/*", (req, res, next) => {
+  // Use a named wildcard or regex route for Express 5 compatibility
+  app.get(/(.*)/, (req, res, next) => {
     res.sendFile(path.join(publicDir, "index.html"), (err) => {
       if (err) next(err);
     });
   });
 }
-
-
-app.use(express.json());
-app.use(cors({origin: FRONTEND_URL, credentials:true}));
-
-app.use(clerkMiddleware());
-
-
-app.get("/health", (req, res) => {
-    res.status(200).json({ ok: true});
-});
-
-
-// if the publuc directory exists, serve the static files
-// this is for the production build
-if (fs.existsSync(publicDir)){
-  app.use(express.static(publicDir));
-
-  app.get("/{*any}",(req,res,next) =>{
-    res.sendFile(path.join(publicDir, "index.html"), (err) => next(err));
-  });
-}
-
-app.use(express.json());
 
 // Connect to MongoDB first, then listen
 connectDB()
