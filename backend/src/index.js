@@ -8,6 +8,10 @@ import path from "path";
 import job from "./lib/cron.js";
 import clerkWebhook from "./webhooks/clerk.webhook.js";
 
+import authRoutes from "./routes/auth.route.js";
+
+
+
 
 import { clerkMiddleware } from '@clerk/express';
 
@@ -31,6 +35,9 @@ app.use(clerkMiddleware());
 app.get("/health", (req, res) => {
     res.status(200).json({ ok: true });
 });
+
+
+app.use("/api/auth",authRoutes);
 
 // Serve frontend static files and handle client-side routing (Only defined ONCE)
 if (fs.existsSync(publicDir)) {
