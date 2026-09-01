@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   build: {
     rolldownOptions: {
-      external: ['@react-aria/utils']
+      external: [/^@react-aria\/.*/]
     }
   }
 })
