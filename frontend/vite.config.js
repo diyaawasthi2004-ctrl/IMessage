@@ -10,4 +10,9 @@ export default defineConfig({
     tailwindcss(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  build: {
+    rolldownOptions: {
+      external: ['@react-aria/utils']
+    }
+  }
 })
