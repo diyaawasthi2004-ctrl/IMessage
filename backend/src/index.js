@@ -3,47 +3,41 @@ import cors from "cors";
 import "dotenv/config";
 import fs from "fs";
 import path from "path";
-
-
-import job from "./lib/cron.js";
-import clerkWebhook from "./webhooks/clerk.webhook.js";
-
-import authRoutes from "./routes/auth.route.js";
-
-
-
-
-import { clerkMiddleware } from '@clerk/express';
+import http from "http";
+import { clerkMiddleware } from "@clerk/express";
 
 import User from "./models/user.model.js";
 import { connectDB } from "./lib/db.js";
+import job from "./lib/cron.js";
+import clerkWebhook from "./webhooks/clerk.webhook.js";
+import authRoutes from "./routes/auth.route.js";
+import messageRoutes from "./routes/message.route.js";
 
 const app = express();
+const server = http.createServer(app);
+
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL;
+const publicDir = path.join(process.cwd(), "public");
 
-const publicDir = path.join(process.cwd(), "Public");
+// Webhook route must use express.raw() before standard JSON parsing
+app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), clerkWebhook);
 
-// it's important that you don't parse the webhook event data, it should be in the raw format
-app.use("/api/webhooks/clerk",express.raw({ type:"application/json" }), clerkWebhook);
-// Standard Middleware
 app.use(express.json());
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(clerkMiddleware());
 
-// API Health Check Route
 app.get("/health", (req, res) => {
-    res.status(200).json({ ok: true });
+  res.status(200).json({ ok: true });
 });
 
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
 
-app.use("/api/auth",authRoutes);
-
-// Serve frontend static files and handle client-side routing (Only defined ONCE)
+// Serve frontend static files for production builds
 if (fs.existsSync(publicDir)) {
   app.use(express.static(publicDir));
 
-  // Use a named wildcard or regex route for Express 5 compatibility
   app.get(/(.*)/, (req, res, next) => {
     res.sendFile(path.join(publicDir, "index.html"), (err) => {
       if (err) next(err);
@@ -51,16 +45,9 @@ if (fs.existsSync(publicDir)) {
   });
 }
 
-// Connect to MongoDB first, then listen
-connectDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log("Server is up and running on PORT:", PORT);
+app.listen(PORT, () => {
+  connectDB();
+  console.log("Server is up and running on PORT:", PORT);
 
-      if (process.env.NODE_ENV === "production") job.start();
-      
-    });
-  })
-  .catch((err) => {
-    console.error("Failed to start server due to DB connection error.");
-  });
+  if (process.env.NODE_ENV === "production") job.start();
+});
