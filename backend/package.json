@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon  src/index.js",
     "start": "node src/index.js",
+    "db:seed": "node src/seeds/user.seed.js",
     "build": "echo 'No build required'"
   },
   "keywords": [],
