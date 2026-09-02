@@ -37,10 +37,8 @@ app.use("/api/messages", messageRoutes);
 if (fs.existsSync(publicDir)) {
   app.use(express.static(publicDir));
 
-  app.get(/(.*)/, (req, res, next) => {
-    res.sendFile(path.join(publicDir, "index.html"), (err) => {
-      if (err) next(err);
-    });
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(publicDir, "index.html"));
   });
 }
 
