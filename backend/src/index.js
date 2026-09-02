@@ -17,7 +17,9 @@ import { app, server } from "./lib/socket.js";
 
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL;
-const publicDir = path.join(process.cwd(), "public");
+const publicDir = path.join(__dirname, "../../frontend/dist");
+
+
 
 // Webhook route must use express.raw() before standard JSON parsing
 app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), clerkWebhook);
