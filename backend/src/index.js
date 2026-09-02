@@ -17,7 +17,8 @@ import { app, server } from "./lib/socket.js";
 
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL;
-const publicDir = path.join(__dirname, "../../frontend/dist");
+const publicDir = path.resolve(process.cwd(), "public");
+
 
 
 
