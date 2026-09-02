@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { getInitials, useSelectedConversation } from "../../hooks/useSelectedConversation";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useChatStore } from "../../store/useChatStore";
@@ -27,9 +28,14 @@ function mapUserForList(user, onlineUsers) {
 
 function ChatSidebar() {
   const conversations = useChatStore((state) => state.conversations);
-
-  console.log(conversations);
   const users = useChatStore((state) => state.users);
+  const getUsers = useChatStore((state) => state.getUsers);
+  const getConversations = useChatStore((state) => state.getConversations);
+
+  useEffect(() => {
+    getUsers();
+    getConversations();
+  }, [getUsers, getConversations]);
 
   const searchQuery = useChatStore((state) => state.searchQuery);
   const setSearchQuery = useChatStore((state) => state.setSearchQuery);
